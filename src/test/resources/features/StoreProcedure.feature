@@ -30,3 +30,13 @@ Feature: Validate MySQL Stored Procedures
     Examples:
       | queryName                      | cityName  | postalCode |
       | selectAllCustomersByCityAndPin | Singapore | 079903     |
+
+
+  Scenario Outline: Verify GetOrderByCustomer returns correct data
+    When I execute the GetOrderByCustomer stored procedure and GetOrderByCustomerQuery with customer Number "<customerNo>"
+    Then the stored procedure result should match the query result
+    Examples:
+      | customerNo  |
+      | 141             |
+
+

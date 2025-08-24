@@ -20,9 +20,16 @@ public class TestConfig {
     public static final String SELECT_ALL_FROM_CUSTOMERS = "select * from customers";
     public static final String CALL_ALL_CUSTOMERS_PROCEDURE = "{CALL SelectAllCustomers()}";
     public static final String CALL_ALL_CUSTOMERS_BY_CITY_PROCEDURE = "{call SelectAllCustomersByCity(?)}";
-    public static final String CALL_ALL_CUSTOMERS_BY_CITY = "SELECT * FROM customers WHERE city = 'Singapore'";
+    public static final String CALL_ALL_CUSTOMERS_BY_CITY = "SELECT * FROM customers WHERE city = ?";
     public static final String CALL_ALL_CUSTOMERS_BY_CITY_AND_PINCODE_PROCEDURE = "{call SelectAllCustomersByCityAndPin(?, ?)}";
-    public static final String CALL_ALL_CUSTOMERS_BY_CITY_AND_PIN = "SELECT * FROM customers WHERE city = 'Singapore' and postalCode = '079903'";
+    public static final String CALL_ALL_CUSTOMERS_BY_CITY_AND_PIN = "SELECT * FROM customers WHERE city = ? AND postalCode = ?";
+    public static final String CALL_GET_ORDER_BY_CUSTOMER_PROCEDURE = "{call get_order_by_cust(?, ?, ?, ?, ?)}";
+    public static final String CALL_GET_ORDER_BY_CUSTOMER_QUERY =
+            "SELECT " +
+                    " (SELECT COUNT(*) FROM orders WHERE customerNumber = ? AND status = ?) AS Shipped, " +
+                    " (SELECT COUNT(*) FROM orders WHERE customerNumber = ? AND status = ?) AS Canceled, " +
+                    " (SELECT COUNT(*) FROM orders WHERE customerNumber = ? AND status = ?) AS Resolved, " +
+                    " (SELECT COUNT(*) FROM orders WHERE customerNumber = ? AND status = ?) AS Disputed";
 
     public static boolean compareResultSets(ResultSet resultSet1, ResultSet resultSet2) throws SQLException {
         while (resultSet1.next()) {
