@@ -24,6 +24,14 @@ public class TestConfig {
     public static final String CALL_ALL_CUSTOMERS_BY_CITY_AND_PINCODE_PROCEDURE = "{call SelectAllCustomersByCityAndPin(?, ?)}";
     public static final String CALL_ALL_CUSTOMERS_BY_CITY_AND_PIN = "SELECT * FROM customers WHERE city = ? AND postalCode = ?";
     public static final String CALL_GET_ORDER_BY_CUSTOMER_PROCEDURE = "{call get_order_by_cust(?, ?, ?, ?, ?)}";
+    public static final String CALL_GET_CUSTOMER_SHIPPING_PROCEDURE = "{call GetCustomerShipping(?, ?)}";
+    public static final String CALL_GET_CUSTOMER_SHIPPING = "SELECT country, \n" +
+            "CASE \n" +
+            "WHEN country = 'USA' THEN '2-day Shipping' \n" +
+            "WHEN country = 'Canada' THEN  '3-day Shipping'\n" +
+            "\tELSE '5-day Shipping'\n" +
+            "\t\tEND as ShippingTime FROM customers WHERE customerNumber = ?";
+
     public static final String CALL_GET_ORDER_BY_CUSTOMER_QUERY =
             "SELECT " +
                     " (SELECT COUNT(*) FROM orders WHERE customerNumber = ? AND status = ?) AS Shipped, " +

@@ -1,3 +1,4 @@
+@Regression
 Feature: Validate MySQL Stored Procedures
 
   Background:
@@ -31,12 +32,20 @@ Feature: Validate MySQL Stored Procedures
       | queryName                      | cityName  | postalCode |
       | selectAllCustomersByCityAndPin | Singapore | 079903     |
 
-
   Scenario Outline: Verify GetOrderByCustomer returns correct data
     When I execute the GetOrderByCustomer stored procedure and GetOrderByCustomerQuery with customer Number "<customerNo>"
     Then the stored procedure result should match the query result
     Examples:
-      | customerNo  |
-      | 141             |
+      | customerNo |
+      | 141        |
 
+
+  Scenario Outline: Verify GetCustomerShipping returns correct data
+    When I execute the GetCustomerShipping stored procedure and GetCustomerShippingQuery with customer Number "<customerNo>"
+    Then the stored procedure result should match the query results
+    Examples:
+      | customerNo |
+      | 112        |
+      | 260        |
+      | 353        |
 

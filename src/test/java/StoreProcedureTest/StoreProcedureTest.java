@@ -1,4 +1,4 @@
-package storeprocedureTesting;
+package StoreProcedureTest;
 
 import Utils.TestConfig;
 import org.testng.Assert;
@@ -106,20 +106,41 @@ public class StoreProcedureTest {
 
         rs = pStmt.executeQuery();
         rs.next();
-            int exp_shipped = rs.getInt("shipped");
-            int exp_canceled = rs.getInt("canceled");
-            int exp_resolved = rs.getInt("resolved");
-            int exp_disputed = rs.getInt("disputed");
+        int exp_shipped = rs.getInt("shipped");
+        int exp_canceled = rs.getInt("canceled");
+        int exp_resolved = rs.getInt("resolved");
+        int exp_disputed = rs.getInt("disputed");
 
-            System.out.println("Shipped: " + exp_shipped);
-            System.out.println("Canceled: " + exp_canceled);
-            System.out.println("Resolved: " + exp_resolved);
-            System.out.println("Disputed: " + exp_disputed);
+        System.out.println("Shipped: " + exp_shipped);
+        System.out.println("Canceled: " + exp_canceled);
+        System.out.println("Resolved: " + exp_resolved);
+        System.out.println("Disputed: " + exp_disputed);
 
         if (shipped == exp_shipped && canceled == exp_canceled && resolved == exp_resolved && disputed == exp_disputed)
             Assert.assertTrue(true);
-            else
-            Assert.assertFalse(false);
+        else Assert.assertFalse(false);
+    }
+
+    @Test(priority = 6)
+    void testGetCustomerShipping() throws SQLException {
+        cStmt = con.prepareCall(TestConfig.CALL_GET_CUSTOMER_SHIPPING_PROCEDURE);
+        cStmt.setInt(1, 260);
+
+        cStmt.registerOutParameter(2, Types.VARCHAR);
+        cStmt.executeQuery();
+
+        String shippingTime = cStmt.getString(2);
+
+        query = TestConfig.CALL_GET_CUSTOMER_SHIPPING;
+        pStmt = con.prepareStatement(query);
+
+        pStmt.setInt(1, 260);
+
+        rs = pStmt.executeQuery();
+        rs.next();
+        String exp_shippingTime = rs.getString("ShippingTime");
+        Assert.assertEquals(shippingTime, exp_shippingTime);
+        System.out.println("Shipped: " + exp_shippingTime);
 
     }
 

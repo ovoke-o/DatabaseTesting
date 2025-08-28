@@ -2,6 +2,7 @@ package Steps;
 
 import Utils.TestConfig;
 import io.cucumber.java.en.*;
+import io.qameta.allure.Step;
 import org.testng.Assert;
 
 import java.sql.*;
@@ -21,6 +22,8 @@ public class StoreProcedureSteps {
     int exp_canceled;
     int exp_resolved;
     int exp_disputed;
+    String exp_shippingTime;
+    String shippingTime;
     private Connection con;
     private Statement stmt;
     private CallableStatement cStmt;
@@ -81,10 +84,11 @@ public class StoreProcedureSteps {
 
     }
 
+    @Step("Execute GetOrderByCustomer for customer {customerNumber}")
     @When("I execute the GetOrderByCustomer stored procedure and GetOrderByCustomerQuery with customer Number {string}")
-    public void executeGetOrderByCustomer(String customerNo) throws SQLException {
+    public void executeGetOrderByCustomer(String customerNumber) throws SQLException {
         cStmt = con.prepareCall(TestConfig.CALL_GET_ORDER_BY_CUSTOMER_PROCEDURE);
-        cStmt.setInt(1, Integer.parseInt(customerNo));
+        cStmt.setInt(1, Integer.parseInt(customerNumber));
 
         cStmt.registerOutParameter(2, Types.INTEGER);
         cStmt.registerOutParameter(3, Types.INTEGER);
@@ -102,13 +106,17 @@ public class StoreProcedureSteps {
         pStmt = con.prepareStatement(query);
 
         // set each status explicitly
-        pStmt.setInt(1, Integer.parseInt(customerNo)); pStmt.setString(2, "Shipped");
+        pStmt.setInt(1, Integer.parseInt(customerNumber));
+        pStmt.setString(2, "Shipped");
 
-        pStmt.setInt(3, Integer.parseInt(customerNo)); pStmt.setString(4, "Canceled");
+        pStmt.setInt(3, Integer.parseInt(customerNumber));
+        pStmt.setString(4, "Canceled");
 
-        pStmt.setInt(5, Integer.parseInt(customerNo)); pStmt.setString(6, "Resolved");
+        pStmt.setInt(5, Integer.parseInt(customerNumber));
+        pStmt.setString(6, "Resolved");
 
-        pStmt.setInt(7, Integer.parseInt(customerNo)); pStmt.setString(8, "Disputed");
+        pStmt.setInt(7, Integer.parseInt(customerNumber));
+        pStmt.setString(8, "Disputed");
 
         rs = pStmt.executeQuery();
         rs.next();
@@ -118,10 +126,8 @@ public class StoreProcedureSteps {
         exp_resolved = rs.getInt("resolved");
         exp_disputed = rs.getInt("disputed");
 
-        System.out.println("Procedure -> Shipped: " + shipped + ", Canceled: " + canceled +
-                ", Resolved: " + resolved + ", Disputed: " + disputed);
-        System.out.println("Query     -> Shipped: " + exp_shipped + ", Canceled: " + exp_canceled +
-                ", Resolved: " + exp_resolved + ", Disputed: " + exp_disputed);
+        System.out.println("Procedure -> Shipped: " + shipped + ", Canceled: " + canceled + ", Resolved: " + resolved + ", Disputed: " + disputed);
+        System.out.println("Query     -> Shipped: " + exp_shipped + ", Canceled: " + exp_canceled + ", Resolved: " + exp_resolved + ", Disputed: " + exp_disputed);
     }
 
     @Then("the stored procedure result should match the query result")
@@ -132,6 +138,33 @@ public class StoreProcedureSteps {
         assertEquals(exp_disputed, disputed, "Mismatch in Disputed count");
 
         System.out.println("Stored procedure results match the query results!");
+    }
+
+    @When("I execute the GetCustomerShipping stored procedure and GetCustomerShippingQuery with customer Number {string}")
+    public void executeGetCustomerShipping(String customerNo) throws SQLException {
+        cStmt = con.prepareCall(TestConfig.CALL_GET_CUSTOMER_SHIPPING_PROCEDURE);
+        cStmt.setInt(1, Integer.parseInt(customerNo));
+
+        cStmt.registerOutParameter(2, Types.VARCHAR);
+        cStmt.executeQuery();
+
+        shippingTime = cStmt.getString(2);
+
+        query = TestConfig.CALL_GET_CUSTOMER_SHIPPING;
+        pStmt = con.prepareStatement(query);
+
+        pStmt.setInt(1, Integer.parseInt(customerNo));
+
+        rs = pStmt.executeQuery();
+        rs.next();
+        exp_shippingTime = rs.getString("ShippingTime");
+
+    }
+
+    @Then("the stored procedure result should match the query results")
+    public void verifyQueryResults() {
+        Assert.assertEquals(shippingTime, exp_shippingTime, "Mismatch in Shipped count");
+        System.out.println("Shipped: " + exp_shippingTime);
     }
 
     @Then("the result should match the {string} query")
