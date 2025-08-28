@@ -45,10 +45,20 @@ Download MySQL Sample Database (classicmodels): https://www.mysqltutorial.org/wp
 
 ## 🧪 Running Tests
 
-### Run All Tests via MAVEN
+### Run All Tests with tag via MAVEN 
 
 ```bash
-mvn test
+mvn clean test -Dcucumber.filter.tags="@Regression"
+```
+
+---
+
+## 🧪 Generate and open the report
+
+### Open the report via bash / cmd
+
+```bash
+allure serve target/allure-results
 ```
 
 ---
@@ -56,7 +66,8 @@ mvn test
 ## 🧾 Example Scenario
 
 ```gherkin
-  Feature: Validate MySQL Stored Procedures
+ @Regression
+Feature: Validate MySQL Stored Procedures
 
   Background:
     Given I am connected to the database
@@ -85,6 +96,27 @@ mvn test
   Scenario Outline: Verify SelectAllCustomersByCityAndPinCode returns correct data
     When I execute the SelectAllCustomersByCityAndPinCode stored procedure with city "<cityName>" and pin "<postalCode>"
     Then the result should match the "<queryName>" query
+    Examples:
+      | queryName                      | cityName  | postalCode |
+      | selectAllCustomersByCityAndPin | Singapore | 079903     |
+
+  Scenario Outline: Verify GetOrderByCustomer returns correct data
+    When I execute the GetOrderByCustomer stored procedure and GetOrderByCustomerQuery with customer Number "<customerNo>"
+    Then the stored procedure result should match the query result
+    Examples:
+      | customerNo |
+      | 141        |
+
+
+  Scenario Outline: Verify GetCustomerShipping returns correct data
+    When I execute the GetCustomerShipping stored procedure and GetCustomerShippingQuery with customer Number "<customerNo>"
+    Then the stored procedure result should match the query results
+    Examples:
+      | customerNo |
+      | 112        |
+      | 260        |
+      | 353        |
+
     Examples:
       | queryName                      | cityName  | postalCode |
       | selectAllCustomersByCityAndPin | Singapore | 079903     |
